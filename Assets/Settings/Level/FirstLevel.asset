@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9798c8ae44297b448bc60d7a03508d48, type: 3}
   m_Name: FirstLevel
   m_EditorClassIdentifier: 
-  lineCount: 3
+  lineCount: 5
   pointInline: 20
   startAngle: -60
   endAngle: 60

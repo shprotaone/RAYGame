@@ -2,5 +2,6 @@ public enum ObjectType
 {
     OBSTACLE,
     DYNAMICOBSTACLE,
-    COIN
+    COIN,
+    LINE
 }

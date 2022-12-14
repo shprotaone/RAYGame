@@ -1,17 +1,18 @@
 using DG.Tweening;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public class MoveObstacle : MonoBehaviour,IObstacle
+public class MoveObstacle : MonoBehaviour, IObstacle, IPooledObject
 {
-    private float _duration = 0.2f;
+    [SerializeField] private ParticleController _particleController;
+    
     private Line _line;
-
     private Direction _direction;
+    
     private int _index;
+    private float _durationTween;
 
     public int Penalty { get; private set; }
+    public ObjectType Type => ObjectType.DYNAMICOBSTACLE;
 
     public void Init(Line line, int penaltyValue,Vector3 spawnPos)
     {
@@ -19,20 +20,30 @@ public class MoveObstacle : MonoBehaviour,IObstacle
         _line = line;
         _index = Random.Range(0, 1);
 
-        transform.SetParent(line.transform);
-        transform.DOLookAt(line.Container.position, 0, AxisConstraint.None, Vector3.forward);
+        transform.position = spawnPos;
+        transform.rotation = Quaternion.Euler(Vector3.zero);
 
         FindMovementDirection();
         Move();
 
-        PointSystem.OnLevelComplete += Disable;
+        LevelProgress.OnLevelComplete += Disable;
+    }
+    
+    public void Execute()
+    {
+        _particleController.Play();
+    }
+
+    public void SetDuration(float min, float max)
+    {
+        _durationTween = Random.Range(min, max);
     }
 
     private void Move()
     {
-        transform.DODynamicLookAt(_line.transform.position, _duration, AxisConstraint.Z, Vector3.forward);
-        transform.DOMoveX(_line.Points[_index].x, _duration).OnComplete(NextPoint).SetEase(Ease.Linear);        
-        transform.DOMoveY(_line.Points[_index].y, _duration).SetEase(Ease.Linear);       
+        transform.DODynamicLookAt(_line.transform.position,_durationTween,AxisConstraint.None,Vector3.forward);
+        transform.DOMoveX(_line.Points[_index].x, _durationTween).OnComplete(NextPoint).SetEase(Ease.Linear);        
+        transform.DOMoveY(_line.Points[_index].y, _durationTween).SetEase(Ease.Linear);       
     }
 
     private void NextPoint()
@@ -46,6 +57,12 @@ public class MoveObstacle : MonoBehaviour,IObstacle
             _index -= 1;
         }
 
+        ChangeDirection();
+        Move();
+    }
+
+    private void ChangeDirection()
+    {
         if (_index == 0)
         {
             _direction = Direction.LEFT;
@@ -54,9 +71,8 @@ public class MoveObstacle : MonoBehaviour,IObstacle
         {
             _direction = Direction.RIGHT;
         }
-
-        Move();
     }
+
     private void FindMovementDirection()
     {
         int dir = Random.Range(0, 1);
@@ -65,8 +81,12 @@ public class MoveObstacle : MonoBehaviour,IObstacle
 
     private void Disable()
     {
-        DOTween.PauseAll();
-    }
+        DOTween.Rewind(transform);
+        DOTween.Kill(transform);
+        
+        ObjectPool.Instance.DestroyObject(this.gameObject);
+        LevelProgress.OnLevelComplete -= Disable;
+    } 
 }
     
 

@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -38,11 +37,5 @@ public class SemicircleCreate
 
             angle += (arcLength / _segments);
         }
-
-
-        //for (int j = 0; j < _segments; j++)
-        //{
-        //    Debug.DrawLine(_arcPoints[j], _arcPoints[j + 1], Color.red,1);
-        //}
     }
 }

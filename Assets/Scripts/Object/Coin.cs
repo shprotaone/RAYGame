@@ -1,18 +1,16 @@
 using DG.Tweening;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(BoxCollider))]
 public class Coin : MonoBehaviour, ICoin,IPooledObject
 {
-    private const int pointReward = 200;
-
     [SerializeField] private BoxCollider _boxCollider;
-    [SerializeField] private Transform _model;
-    [SerializeField] private Vector3 _direction;
-    [SerializeField] private float _duration = 1;
     [SerializeField] private ParticleSystem _particleSystem;
+    [SerializeField] private Transform _transform;
+    [SerializeField] private float _duration = 1;
+
+    private Vector3 _rotateDirection = new Vector3(0, 20, 0);
 
     public ObjectType Type => ObjectType.COIN;
     public int Reward { get; private set; }
@@ -20,27 +18,37 @@ public class Coin : MonoBehaviour, ICoin,IPooledObject
     public void Init(Vector3 pos,int reward)
     {
         Reward = reward;
-        transform.DORotate(_direction, _duration).SetLoops(-1, LoopType.Incremental).SetEase(Ease.Linear);
-
         transform.position = pos;
-        PointSystem.OnLevelComplete += Disable;
+
+        _transform.gameObject.SetActive(true);
+        _boxCollider.enabled = true;  
+        transform.DORotate(_rotateDirection, _duration).SetLoops(-1, LoopType.Incremental).SetEase(Ease.Linear);    
+        
+        LevelProgress.OnLevelComplete += Disable;
+    }
+
+    public void DestroyHandler()
+    {
+        StartCoroutine(DestroyRoutine());
     }
 
     public IEnumerator DestroyRoutine()
     {
         _particleSystem.Play();
-        _model.gameObject.SetActive(false);
+        _transform.gameObject.SetActive(false);
         _boxCollider.enabled = false;
 
         yield return new WaitForSeconds(_particleSystem.main.duration);
 
         Disable();
-        _model.gameObject.SetActive(true);
-        _boxCollider.enabled = true;
+
+        yield break;
     }
 
     private void Disable()
     {
+        DOTween.Kill(transform);
         ObjectPool.Instance.DestroyObject(gameObject);
+        LevelProgress.OnLevelComplete -= Disable;
     }
 }

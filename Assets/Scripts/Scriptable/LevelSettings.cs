@@ -10,6 +10,5 @@ public class LevelSettings : ScriptableObject
 
     public float startAngle = -60;
     public float endAngle = 60;
-
     public int coinCount;
 }

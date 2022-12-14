@@ -6,7 +6,7 @@ public class LevelRandomizer : MonoBehaviour
 
     public LevelSettings GenerateRandomLevel()
     {
-        _levelSettings.lineCount = Random.Range(3, 10);
+        _levelSettings.lineCount = Random.Range(3, 15);
         _levelSettings.coinCount = Random.Range(15, 30);
         _levelSettings.pointInline = Random.Range(10, 30);
 

@@ -1,44 +1,35 @@
-using DG.Tweening;
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Laser : MonoBehaviour
 {
     [SerializeField] private LaserMovement _movement;
     [SerializeField] private Beam _beam;
+    [SerializeField] private BeamParticleController _particle;
 
-    public bool IsScoring { get; private set; }
-    public bool IsStopped { get; private set; }
-
-    public void Init()
+    private bool _isInitial = false;
+    public void Init(int penalty)
     {
-        IsScoring = true;
-
-        _beam.Init();
-        _movement.StartMovement();
+        _isInitial = true;
+        _movement.Init();
+        _beam.Init(penalty);    
     }
 
     private void Update()
     {
-        if (Input.GetMouseButtonDown(0))
+        if (_isInitial)
         {
-            _movement.StopLaser();
-            IsStopped = true;
-            _beam.Fire();            
-        }
+            if (Input.GetMouseButtonDown(0))
+            {
+                _movement.StopLaser();
+                _beam.Fire();
+                _particle.Enable();
+            }
 
-        if (Input.GetMouseButtonUp(0))
-        {
-            _movement.StartLaser();
-            IsStopped = false;
-            IsScoring = true;
-        }
-    }
-
-    public void SetScoring(bool value)
-    {
-        IsScoring = value;
+            if (Input.GetMouseButtonUp(0))
+            {
+                _movement.StartLaser();
+                _particle.Disable();
+            }
+        }     
     }
 }

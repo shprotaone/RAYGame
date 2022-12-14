@@ -1,22 +1,26 @@
+using System;
 using UnityEngine;
 
 public class Beam : MonoBehaviour
 {
-    [SerializeField] private PointSystem _pointSystem;
-    [SerializeField] private float _beamLenght;
-    [SerializeField] private LineRenderer _lineRenderer;
+    public static event Action<int> OnIncreaseScore;
+    public static event Action<int> OnDecreaseScore;
 
-    [SerializeField] private int _emptyPenalty;
+    [SerializeField] private LineRenderer _lineRenderer;
+    [SerializeField] private float _beamLenght;
+
+    private int _emptyPenalty;
     private float _currentLenght;
     private Vector3 _endPose;
 
-    public void Init()
+    public void Init(int penalty)
     {
+        _emptyPenalty = penalty;
         _currentLenght = _beamLenght;
+        _lineRenderer.enabled = true;
 
         _lineRenderer.useWorldSpace = false;
-        _lineRenderer.SetPosition(0,transform.localPosition);
-        
+        _lineRenderer.SetPosition(0,transform.localPosition);      
     }
 
     private void FixedUpdate()
@@ -49,25 +53,24 @@ public class Beam : MonoBehaviour
     {
         RaycastHit hit;
 
-        Debug.DrawRay(transform.position, _endPose, Color.yellow, 1000f);
-
         if (Physics.Raycast(transform.position, _endPose, out hit))
         {
             MonoBehaviour behaviour = hit.collider.GetComponent<MonoBehaviour>();
 
             if (behaviour is IObstacle obstacle)
             {
-                _pointSystem.DecreasePoint(obstacle.Penalty);
+                OnDecreaseScore?.Invoke(obstacle.Penalty);
+                obstacle.Execute();
             }
             else if (behaviour is ICoin coin)
             {
-                _pointSystem.IncreasePoint(coin.Reward);
-                StartCoroutine(coin.DestroyRoutine());
+                coin.DestroyHandler();
+                OnIncreaseScore?.Invoke(coin.Reward);              
             }
         }
         else
         {
-            _pointSystem.DecreasePoint(_emptyPenalty);
+            OnDecreaseScore?.Invoke(_emptyPenalty);
         }
     }
 }

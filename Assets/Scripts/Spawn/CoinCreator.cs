@@ -1,107 +1,104 @@
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class CoinCreator : MonoBehaviour
-{
-    [SerializeField] private Transform _laserTransform;
+{    
     [SerializeField] private LevelBuilder _levelBuilder;
-    [SerializeField] private GameObject _coinPrefab;
-    [SerializeField] private Transform _container;
+    [SerializeField] private List<Vector3> _availablePoints;
+    [SerializeField] private List<Vector3> _allPoints;
+    [SerializeField] private Transform _laserTransform;
 
-    [SerializeField] private int _reward;
-    private Line[] _lines;
+    private Vector3 offsetForLinecast = new Vector3(0, -0.5f, 0);
 
-    public void Init()
-    {        
-        SetLines();
-        CreateNextCoin();
-    }
-    
-    public void SetLines()
+    private int _reward;
+    private Vector3 _currentPos;
+    private GameObject _currentCoin;
+
+    public void Init(int reward)
     {
-        _lines = _levelBuilder.Lines.ToArray();
+        _availablePoints = new List<Vector3>();
+        _reward = reward;
+
+        FindPoints();
+        SetNextPosition();
+        StartCoroutine(CreateNextCoin());
+
+        LevelProgress.OnLevelComplete += Disable;
     }
 
-    public void CreateNextCoin()
+    public void CreateNextPointHandler()
     {
-        int indexPos;
-        Vector3 pos;
+        StartCoroutine(CreateNextCoin());
+    }
 
-        SetLines();
-        Line line = GetLine();   //обновление линии
+    private void FindPoints()
+    {
+        _allPoints = new List<Vector3>();
 
-        indexPos = FindPosition(line);
-        pos = line.Points[indexPos];
-
-        if (CheckAvailability(pos))
+        for (int i = 0; i < _levelBuilder.Lines.Count; i++)
         {
-            GameObject coinGO =ObjectPool.Instance.GetObject(ObjectType.COIN);
-            if(coinGO.TryGetComponent(out ICoin coin))
+            _allPoints.AddRange(_levelBuilder.Lines[i].Points);  //собрали все доступные точки
+        }
+
+        foreach (var point in _allPoints)
+        {
+            if (CommonFindPos(point) != Vector3.zero)
             {
-                coin.Init(pos,_reward);
-            }           
-        }
-        else
-        {
-            CreateNextCoin();
-        }    
-    }
-
-    private Line GetLine()
-    {
-        return _lines[UnityEngine.Random.Range(0, _lines.Length-1)];
-    }
-
-    private int FindPosition(Line line)
-    {    
-        int indexPoint = UnityEngine.Random.Range(0, line.Points.Count);
-
-        bool check = CheckFreePosition(line, indexPoint);
-
-        if (check)
-        {
-            return indexPoint;
-        }
-        else
-        {
-            Debug.Log("Данная точка занята");
-            return -1;
-        }
-    }
-
-    private bool CheckFreePosition(Line line, int indexPosition)
-    {
-        foreach (int index in line.BusyPoints)
-        {
-            if (index == indexPosition)
-            {
-                return false;
+                _availablePoints.Add(point);
             }
         }
-
-        return true;
     }
 
-    private bool CheckAvailability(Vector3 pos)
+    private IEnumerator CreateNextCoin()
+    {
+        yield return new WaitForSeconds(0.1f);
+
+        _currentCoin = ObjectPool.Instance.GetObject(ObjectType.COIN);
+
+        if(_currentCoin.TryGetComponent(out ICoin coin))
+        {            
+            coin.Init(_currentPos, _reward);
+        }
+
+        SetNextPosition();
+
+        yield break;
+    }
+
+    private Vector3 CommonFindPos(Vector3 point)
+    {
+        return CheckAvailability(point);
+    }
+
+    private void SetNextPosition()
+    {
+        int index = Random.Range(0, _availablePoints.Count);
+        _currentPos = _availablePoints[index];
+    }
+
+    private Vector3 CheckAvailability(Vector3 pos)
     {
         Vector3 playerPosition = _laserTransform.transform.position;
 
-        RaycastHit hit;
-
-        Debug.DrawLine(pos, playerPosition, Color.red, 1000);
-
-        if(Physics.Linecast(pos, playerPosition, out hit))
+        bool isAvailability = Physics.Linecast(pos + offsetForLinecast, playerPosition);
+                              
+             
+        if (isAvailability)
         {
-            if(hit.collider.CompareTag("Player"))
-            {
-                return true;
-            }
-            else if(hit.collider.CompareTag("Obstacle"))
-            {
-                Debug.Log("OBSTACLE");
-                return false;
-            }
+            Debug.DrawLine(pos + offsetForLinecast, playerPosition, Color.red, 100);
+            return Vector3.zero;
         }
+        else
+        {
+            Debug.DrawLine(pos + offsetForLinecast, playerPosition, Color.green, 100);
+            return pos;
+        }
+    }
 
-        return false;
+    private void Disable()
+    {
+        ObjectPool.Instance.DestroyObject(_currentCoin);
+        LevelProgress.OnLevelComplete -= Disable;
     }
 }

@@ -1,33 +1,104 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 
-public class LevelProgress : MonoBehaviour
+public class LevelProgress
 {
-    public static event Action OnChangedLevel;
+    public static event Action OnStartLevel;
+    public static event Action OnLevelComplete; 
+    public static event Action<int> OnCoinCollect;
 
-    public readonly int levelStep = 500;
+    private int _taskCoinCount;
+    private int _currentCoinCount;
 
-    [SerializeField] private PointViewer _pointViewer;
-    [SerializeField] private int _level;
-    private int _nextLevelRangePoint;
-
-    public int CurrentLevel => _level;
-    public int NextLevelRange => _nextLevelRangePoint;
-
-    public void Init() 
+    public LevelProgress(int taskCoinCount)
     {
-        _nextLevelRangePoint = levelStep;
-        _level = 1;
-        _pointViewer.SetLevelText(_level);
+        _currentCoinCount = 0;
+        SetTask(taskCoinCount);
+        Beam.OnIncreaseScore += CollectedCoin;
+        OnLevelComplete += Disable;
+        OnCoinCollect?.Invoke(_taskCoinCount - _currentCoinCount);
+        OnStartLevel?.Invoke();
     }
 
-    public void LevelUp()
+    private void SetTask(int coin)
     {
-        _level++;
-        _nextLevelRangePoint += levelStep;
-        _pointViewer.SetLevelText(CurrentLevel);
-        OnChangedLevel?.Invoke();
+        _taskCoinCount = coin;
     }
+
+    private void CollectedCoin(int value)
+    {
+        _currentCoinCount++;
+        CheckLevelComplete();
+        OnCoinCollect?.Invoke(_taskCoinCount - _currentCoinCount);
+    }
+
+    private void CheckLevelComplete()
+    {
+        if (_taskCoinCount <= _currentCoinCount)
+        {
+            OnLevelComplete?.Invoke();
+        }
+    }
+
+    public void ForcedEndGame()
+    {
+        OnLevelComplete?.Invoke();
+    }
+
+    private void Disable()
+    {
+        Beam.OnIncreaseScore -= CollectedCoin;
+        OnLevelComplete -= Disable;
+    }
+
+    #region под бесконечный уровень 
+
+    //public void Init() 
+    //{
+    //    //_nextLevelRangePoint = levelStep;
+    //    _level = 1;
+    //    _pointViewer.SetLevelText(_level);
+    //}
+
+    //public void LevelUp()
+    //{
+    //    _level++;
+    //    _nextLevelRangePoint += levelStep;
+    //    _pointViewer.SetLevelText(CurrentLevel);
+    //    OnChangedLevel?.Invoke(_level);
+    //}
+
+    //public void LevelUp(int level)
+    //{
+    //    level = _levelPr.CurrentLevel;        
+
+    //    if (_levelPr.CurrentLevel % 4 == 0)
+    //    {
+    //        Debug.Log("SpeedUp");
+    //        OnSpeedUp?.Invoke();
+    //    }
+    //    else if (_levelPr.CurrentLevel % 3 == 0)
+    //    {
+    //        if (_container.childCount < _builderSettings.maximumLine)
+    //        {
+    //            CreateLine();
+    //            _currentRadius += _builderSettings.lineStepDistance;
+    //        }
+    //    }
+
+    //    if (_levelPr.CurrentLevel % 2 == 0)
+    //    {
+
+    //    }
+
+    //    //else if(-(_startAngle) + _endAngle < 360)
+    //    //{
+    //    //    _startAngle -= 11;
+    //    //    _endAngle += 11;
+    //    //    OnChangeAngle?.Invoke(_startAngle, _endAngle);
+    //    //    ChangeLenghtLine();
+
+    //    //    Debug.Log("SpeedUP");
+    //    //}
+    //}
+    #endregion
 }

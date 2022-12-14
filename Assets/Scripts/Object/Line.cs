@@ -1,9 +1,7 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Line : MonoBehaviour
+public class Line : MonoBehaviour,IPooledObject
 {
     [SerializeField] private LineRenderer _lineRenderer;
 
@@ -11,39 +9,26 @@ public class Line : MonoBehaviour
     private int _obstacleCount;
 
     public List<Vector3> Points { get; private set; }
-    public List<int> BusyPoints { get; set; }
-    public LineType Type { get; private set; }
+    public List<int> BusyPoints { get; private set; }
+    public LineType ObstacleType { get; private set; }
     public int IndexLine { get; private set; }
-    public bool isLineFull { get; private set; }
+    public bool IsLineFull { get; private set; }
     public Transform Container { get; private set; }
 
-    public void CreateLine(int indexLine, Transform container)
-    {
-        Points = new List<Vector3>();
-        Points = _semicircleCreator.ArcPoints;
-        BusyPoints = new List<int>();
+    public ObjectType Type => ObjectType.LINE;
 
+    public void Init(float startAngle, float endAngle, float radius, int segments, int indexLine, Transform container)
+    {
         IndexLine = indexLine;
         Container = container;
 
-        DrawLine();
-
-        LevelBuilder.OnChangeAngle += IncreaseLineLenght;
+        transform.SetParent(Container);
+        SetPoints(startAngle, endAngle, radius, segments);
+        CreateLine(indexLine);
+        SetLineType();
     }
 
-    public void IncreaseLineLenght(float startAngle,float endAngle)
-    {
-        SetPoints(startAngle, endAngle, _semicircleCreator.Radius, _semicircleCreator.Segments);
-        DrawLine();
-    }
-
-    private void DrawLine()
-    {
-        _lineRenderer.positionCount = Points.Count;
-        _lineRenderer.SetPositions(Points.ToArray());
-    }
-
-    public void SetPoints(float startAngle ,float endAngle, float radius,int segments)
+    private void SetPoints(float startAngle, float endAngle, float radius, int segments)
     {
         _semicircleCreator = new SemicircleCreate(
             startAngle,
@@ -52,37 +37,66 @@ public class Line : MonoBehaviour
             radius
             );
 
-        _semicircleCreator.CreatePoints(transform.position);
+        _semicircleCreator.CreatePoints(Vector3.zero);
     }
 
-    public void SetType(LineType type)
+    private void CreateLine(int indexLine)
     {
-        Type = type;
+        Points = new List<Vector3>();
+        Points = _semicircleCreator.ArcPoints;
+        BusyPoints = new List<int>();
 
-        if(type == LineType.DYNAMIC)
+        IndexLine = indexLine;
+        DrawLine();
+
+    }
+
+    private void SetLineType()
+    {
+        if (IndexLine == 0)
         {
+            ObstacleType = LineType.EMPTY;
+        }
+        else if (IndexLine % 3 == 0)
+        {
+            ObstacleType = LineType.DYNAMIC;
             _obstacleCount = 1;
         }
-        else if(type == LineType.STATIC)
+        else
         {
+            ObstacleType = LineType.STATIC;
             _obstacleCount = IndexLine - 1;
         }
+    }
+
+    private void DrawLine()
+    {
+        _lineRenderer.positionCount = Points.Count;
+        _lineRenderer.SetPositions(Points.ToArray());
     }
 
     public void CheckFillLine()
     {        
         if(_obstacleCount > BusyPoints.Count)
         {
-            isLineFull = false;
+            IsLineFull = false;
         }
         else
         {
-            isLineFull = true;
+            IsLineFull = true;
         }
     }
 
     public void DestroyLine()
     {
-        Destroy(this.gameObject);
+        ObjectPool.Instance.DestroyObject(this.gameObject);
     }
+
+    #region поворот 360
+    //public void IncreaseLineLenght(float startAngle, float endAngle)
+    //{
+    //    SetPoints(startAngle, endAngle, _semicircleCreator.Radius, _semicircleCreator.Segments);
+    //    DrawLine();
+    //}
+    #endregion
 }
