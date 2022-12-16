@@ -81,17 +81,16 @@ public class CoinCreator : MonoBehaviour
     {
         Vector3 playerPosition = _laserTransform.transform.position;
 
-        bool isAvailability = Physics.Linecast(pos + offsetForLinecast, playerPosition);
-                              
+        bool isAvailability = Physics.Linecast(pos , playerPosition);                              
              
         if (isAvailability)
         {
-            Debug.DrawLine(pos + offsetForLinecast, playerPosition, Color.red, 100);
+            Debug.DrawLine(pos, playerPosition, Color.red, 100);
             return Vector3.zero;
         }
         else
         {
-            Debug.DrawLine(pos + offsetForLinecast, playerPosition, Color.green, 100);
+            Debug.DrawLine(pos, playerPosition, Color.green, 100);
             return pos;
         }
     }
