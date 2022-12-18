@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: FirstLevel
   m_EditorClassIdentifier: 
   lineCount: 5
-  pointInline: 20
+  pointCountInLine: 20
   startAngle: -60
   endAngle: 60
   coinCount: 15

@@ -3,21 +3,18 @@ using UnityEngine;
 
 public class EndGamePanel : MonoBehaviour
 {
-    [SerializeField] private GameInitializator _gameInitializator;
     [SerializeField] private TMP_Text _resultText;
-    
-    private void Start()
+
+    private ScoreSystem _scoreSystem;
+
+    public void Init(ScoreSystem scoreSystem)
     {
-        LevelProgress.OnLevelComplete += Init;
+        _scoreSystem = scoreSystem;
+        LevelProgress.OnLevelComplete += Show;
     }
 
-    private void Init()
+    private void Show()
     {
-        _resultText.text = _gameInitializator.ScoreSystem.Score.ToString();
-    }
-    private void OnDisable()
-    {
-        //LevelProgress.OnLevelComplete -= Init;
-        //LevelProgress.OnStartLevel -= Close;
+        _resultText.text = _scoreSystem.Score.ToString();
     }
 }

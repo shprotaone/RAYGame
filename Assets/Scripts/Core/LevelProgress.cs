@@ -12,16 +12,11 @@ public class LevelProgress
     public LevelProgress(int taskCoinCount)
     {
         _currentCoinCount = 0;
-        SetTask(taskCoinCount);
+        _taskCoinCount = taskCoinCount;
         Beam.OnIncreaseScore += CollectedCoin;
         OnLevelComplete += Disable;
         OnCoinCollect?.Invoke(_taskCoinCount - _currentCoinCount);
         OnStartLevel?.Invoke();
-    }
-
-    private void SetTask(int coin)
-    {
-        _taskCoinCount = coin;
     }
 
     private void CollectedCoin(int value)

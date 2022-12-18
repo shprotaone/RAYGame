@@ -278,7 +278,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 650217742}
-  m_RootOrder: 6
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &184362210
 MonoBehaviour:
@@ -295,8 +295,9 @@ MonoBehaviour:
   _inGameCanvas: {fileID: 489133133}
   _mainMenuCanvas: {fileID: 264355696}
   _mainMenuCanvasGroup: {fileID: 264355698}
-  _endGamePanel: {fileID: 1974387143}
-  _mainMenu: {fileID: 264355693}
+  _mainMenu: {fileID: 264355699}
+  _endGamePanel: {fileID: 184362211}
+  _pauseMenu: {fileID: 489133136}
   _gameInitializator: {fileID: 1605714199}
 --- !u!114 &184362211
 MonoBehaviour:
@@ -310,7 +311,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 704e68277a7b43947bec21783ff785ae, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _gameInitializator: {fileID: 1605714199}
   _resultText: {fileID: 483467732}
 --- !u!1 &237468057
 GameObject:
@@ -342,7 +342,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 650217742}
-  m_RootOrder: 3
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &237468059
 MonoBehaviour:
@@ -356,11 +356,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8fd4a7627187f674fa9168bf9d905822, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _levelBuilder: {fileID: 909031053}
-  _obstacleStaticGO: {fileID: 863478985729207415, guid: 70c7ba6da9cc6ed4e86e965652a47b07,
-    type: 3}
-  _obstacleMovementGO: {fileID: 863478985729207415, guid: 86d43e3cb89279647a2f3466f3eb2b55,
-    type: 3}
 --- !u!1 &261920408
 GameObject:
   m_ObjectHideFlags: 0
@@ -1537,12 +1532,12 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1605714198}
+  - {fileID: 184362209}
   - {fileID: 909031051}
   - {fileID: 1876900835}
   - {fileID: 237468058}
   - {fileID: 1609200867}
   - {fileID: 1535982135}
-  - {fileID: 184362209}
   m_Father: {fileID: 0}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1815,7 +1810,6 @@ GameObject:
   m_Component:
   - component: {fileID: 909031051}
   - component: {fileID: 909031053}
-  - component: {fileID: 909031054}
   m_Layer: 0
   m_Name: LevelBuilder
   m_TagString: Untagged
@@ -1836,7 +1830,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 650217742}
-  m_RootOrder: 1
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &909031053
 MonoBehaviour:
@@ -1854,19 +1848,6 @@ MonoBehaviour:
   _container: {fileID: 909031051}
   _linePrefab: {fileID: 4436434755974594392, guid: d4af4823c493e9742a9da8be343ffc2d,
     type: 3}
---- !u!114 &909031054
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 909031050}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 73ee3d61be38fc4468085c1b258ff081, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _levelSettings: {fileID: 11400000, guid: a21051a414de62c4ab64de22b6d4ac45, type: 2}
 --- !u!1 &915678582
 GameObject:
   m_ObjectHideFlags: 0
@@ -2719,7 +2700,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 650217742}
-  m_RootOrder: 5
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1535982136
 MonoBehaviour:
@@ -2933,7 +2914,7 @@ MonoBehaviour:
   _levelBuilder: {fileID: 909031053}
   _coinCreator: {fileID: 1876900837}
   _laser: {fileID: 928678601}
-  _levelRandomizer: {fileID: 909031054}
+  _menuController: {fileID: 0}
   _levelSettings: {fileID: 11400000, guid: 869af60cab94a9242b9bda3672753fbe, type: 2}
   _endlessLevelSettings: {fileID: 11400000, guid: 601d11dfe63d7fd49abd68bd74e1bc14,
     type: 2}
@@ -2969,7 +2950,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 650217742}
-  m_RootOrder: 4
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1609200869
 MonoBehaviour:
@@ -3094,7 +3075,7 @@ Transform:
   m_Children:
   - {fileID: 540639053}
   m_Father: {fileID: 650217742}
-  m_RootOrder: 2
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1876900837
 MonoBehaviour:
@@ -3108,10 +3089,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1f5c615f3481b8c4f9fcc46a2e8ba431, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _levelBuilder: {fileID: 909031053}
-  _availablePoints: []
-  _allPoints: []
-  _laserTransform: {fileID: 166233216}
 --- !u!1 &1890623758
 GameObject:
   m_ObjectHideFlags: 0

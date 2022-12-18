@@ -7,10 +7,10 @@ public class Laser : MonoBehaviour
     [SerializeField] private BeamParticleController _particle;
 
     private bool _isInitial = false;
-    public void Init(int penalty)
+    public void Init(int penalty,LevelBuilder levelBuilder)
     {
         _isInitial = true;
-        _movement.Init();
+        _movement.Init(levelBuilder);
         _beam.Init(penalty);    
     }
 

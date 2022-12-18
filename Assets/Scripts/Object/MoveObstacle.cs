@@ -8,7 +8,7 @@ public class MoveObstacle : MonoBehaviour, IObstacle, IPooledObject
     private Line _line;
     private Direction _direction;
     
-    private int _index;
+    private int _index = 0;
     private float _durationTween;
 
     public int Penalty { get; private set; }
@@ -18,7 +18,6 @@ public class MoveObstacle : MonoBehaviour, IObstacle, IPooledObject
     {
         Penalty = penaltyValue;
         _line = line;
-        _index = Random.Range(0, 1);
 
         transform.position = spawnPos;
         transform.rotation = Quaternion.Euler(Vector3.zero);

@@ -13,7 +13,7 @@ public class LevelBuilder : MonoBehaviour
     private float _startAngle;
     private float _endAngle;
     private int _lineCount;
-    private int _pointInLine;
+    private int _pointCountInLine;
 
     private List<Line> _lines;
     private float _currentRadius;
@@ -29,7 +29,7 @@ public class LevelBuilder : MonoBehaviour
         _startAngle = settings.startAngle;
         _endAngle = settings.endAngle;
         _lineCount = settings.lineCount;
-        _pointInLine = settings.pointInline;
+        _pointCountInLine = settings.pointCountInLine;
         _currentRadius = _builderSettings.minRadius;
 
         CreateLevel();
@@ -53,7 +53,7 @@ public class LevelBuilder : MonoBehaviour
         Line line = lineGO.GetComponent<Line>();
 
         _lines.Add(line);
-        line.Init(_startAngle, _endAngle, _currentRadius, _pointInLine,_lines.Count,_container);
+        line.Init(_startAngle, _endAngle, _currentRadius, _pointCountInLine,_lines.Count,_container);
 
     }
 
@@ -65,6 +65,21 @@ public class LevelBuilder : MonoBehaviour
         }
 
         _lines.Clear();
+    }
+
+    public Line GetRandomFreeLine(LineType type)
+    {
+        foreach (Line line in Lines)
+        {
+            line.CheckFillLine();
+
+            if (line.ObstacleType == type && !line.IsLineFull)
+            {
+                return line;
+            }
+        }
+
+        return null;
     }
 
     private void Disable()

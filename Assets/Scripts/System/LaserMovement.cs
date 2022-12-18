@@ -2,25 +2,25 @@ using DG.Tweening;
 using UnityEngine;
 
 public class LaserMovement : MonoBehaviour
-{  
-    [SerializeField] private LevelBuilder _levelBuilder;
+{      
     [SerializeField] private float _duration;
 
     private Sequence _laserSequence;
 
+    private LevelBuilder _levelBuilder;
     public float Duration => _duration;
 
-    public void Init()
+    public void Init(LevelBuilder levelBuilder)
     {
         _laserSequence = DOTween.Sequence();
-
-        SetRotation(_levelBuilder.StartAngle);      
+        _levelBuilder = levelBuilder;
+        SetStartRotation(_levelBuilder.StartAngle);      
         StartMovement();
 
         LevelProgress.OnLevelComplete += DisableBeam;
     }
 
-    public void SetRotation(float angle)
+    public void SetStartRotation(float angle)
     {
         transform.rotation = Quaternion.Euler(new Vector3(0, 0, angle));
     }

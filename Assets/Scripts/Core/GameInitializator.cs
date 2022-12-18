@@ -7,9 +7,10 @@ public class GameInitializator : MonoBehaviour
     [SerializeField] private ObstacleCreator _objectCreator;
     [SerializeField] private LevelBuilder _levelBuilder;
     [SerializeField] private CoinCreator _coinCreator;   
-    [SerializeField] private Laser _laser;    
-    [SerializeField] private LevelRandomizer _levelRandomizer;
-
+    [SerializeField] private Laser _laser;
+    [SerializeField] private MenuController _menuController;
+     
+    private LevelRandomizer _levelRandomizer;
     private ScoreSystem _scoreSystem;
     private LevelProgress _levelProgress;
 
@@ -25,29 +26,31 @@ public class GameInitializator : MonoBehaviour
 
     public ScoreSystem ScoreSystem => _scoreSystem;
     public LevelProgress LevelProgress => _levelProgress;
+
     public void InitCurrentGame()
-    {      
+    {     
         _currentLevelSettings = _levelSettings;
         StartCoroutine(StartGame());
     }
 
     public IEnumerator StartGame()
     {
-        Time.timeScale = 1;
+        Time.timeScale = 1;  
+
         _scoreSystem = new ScoreSystem(_coinCreator);
         _levelProgress = new LevelProgress(_currentLevelSettings.coinCount);
-
-        _objectCreator.Init(_balanceSettings.obstacleFirePenalty,
-                            _balanceSettings.minDurationMoveObstacle,
-                            _balanceSettings.maxDurationMoveObstacle);   
+        _menuController.Init();
         
         _levelBuilder.Init(_currentLevelSettings);
+        _objectCreator.Init(_balanceSettings.obstacleFirePenalty,
+                            _balanceSettings.minDurationMoveObstacle,
+                            _balanceSettings.maxDurationMoveObstacle,
+                            _levelBuilder);            
 
         yield return new WaitForSeconds(0.2f);  //задержка для генерации препятствий
 
-        _coinCreator.Init(_balanceSettings.reward);
-        _scoreSystem.Init();               
-        _laser.Init(_balanceSettings.emptyFirePenalty);
+        _coinCreator.Init(_balanceSettings.reward,_levelBuilder,_laser.transform.position);
+        _laser.Init(_balanceSettings.emptyFirePenalty,_levelBuilder);
 
         yield break;
     }
@@ -60,7 +63,12 @@ public class GameInitializator : MonoBehaviour
 
     public void InitRandomLevel()
     {
+        _levelRandomizer = new LevelRandomizer();
         _levelRandomizer.GenerateRandomLevel();
+
+        _randomLevel.coinCount = _levelRandomizer.CoinCount;
+        _randomLevel.lineCount = _levelRandomizer.LineCount;
+        _randomLevel.pointCountInLine = _levelRandomizer.PointCountInLine;
 
         _currentLevelSettings = _randomLevel;
         StartCoroutine(StartGame());

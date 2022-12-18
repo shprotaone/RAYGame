@@ -7,7 +7,7 @@ public class Coin : MonoBehaviour, ICoin,IPooledObject
 {
     [SerializeField] private BoxCollider _boxCollider;
     [SerializeField] private ParticleSystem _particleSystem;
-    [SerializeField] private Transform _transform;
+    [SerializeField] private GameObject _model;
     [SerializeField] private float _duration = 1;
 
     private Vector3 _rotateDirection = new Vector3(0, 20, 0);
@@ -20,7 +20,7 @@ public class Coin : MonoBehaviour, ICoin,IPooledObject
         Reward = reward;
         transform.position = pos;
 
-        _transform.gameObject.SetActive(true);
+        _model.SetActive(true);
         _boxCollider.enabled = true;  
         transform.DORotate(_rotateDirection, _duration).SetLoops(-1, LoopType.Incremental).SetEase(Ease.Linear);    
         
@@ -35,7 +35,7 @@ public class Coin : MonoBehaviour, ICoin,IPooledObject
     public IEnumerator DestroyRoutine()
     {
         _particleSystem.Play();
-        _transform.gameObject.SetActive(false);
+        _model.SetActive(false);
         _boxCollider.enabled = false;
 
         yield return new WaitForSeconds(_particleSystem.main.duration);

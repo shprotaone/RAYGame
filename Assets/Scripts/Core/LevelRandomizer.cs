@@ -1,15 +1,15 @@
 using UnityEngine;
 
-public class LevelRandomizer : MonoBehaviour
+public class LevelRandomizer
 {
-    [SerializeField] private LevelSettings _levelSettings;
+    public int LineCount { get; private set; }
+    public int CoinCount { get; private set; }
+    public int PointCountInLine { get; private set; }
 
-    public LevelSettings GenerateRandomLevel()
+    public void GenerateRandomLevel()
     {
-        _levelSettings.lineCount = Random.Range(3, 15);
-        _levelSettings.coinCount = Random.Range(15, 30);
-        _levelSettings.pointInline = Random.Range(10, 30);
-
-        return _levelSettings;
+        LineCount = Random.Range(3, 15);
+        CoinCount = Random.Range(15, 30);
+        PointCountInLine = Random.Range(10, 30);
     }
 }

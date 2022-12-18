@@ -1,6 +1,4 @@
-using DG.Tweening;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class MenuController : MonoBehaviour
 {
@@ -8,14 +6,17 @@ public class MenuController : MonoBehaviour
     [SerializeField] private Canvas _mainMenuCanvas;
     [SerializeField] private CanvasGroup _mainMenuCanvasGroup;
 
-    [SerializeField] private GameObject _endGamePanel;
-    [SerializeField] private GameObject _mainMenu;
+    [SerializeField] private MainMenu _mainMenu;
+    [SerializeField] private EndGamePanel _endGamePanel;
+    [SerializeField] private PauseMenu _pauseMenu;
 
     [SerializeField] private GameInitializator _gameInitializator;
 
-    private void Start()
-    {    
+    public void Init()
+    {
         _inGameCanvas.enabled = false;
+        _endGamePanel.Init(_gameInitializator.ScoreSystem);
+        _mainMenu.Init(this);
         LevelProgress.OnLevelComplete += EndGame;
     }
 
@@ -47,12 +48,13 @@ public class MenuController : MonoBehaviour
 
     public void EndGame()
     {
-        _endGamePanel.SetActive(true);
-        _mainMenu.SetActive(true);
+        _endGamePanel.gameObject.SetActive(true);
+        _mainMenu.gameObject.SetActive(true);
         _mainMenuCanvasGroup.alpha = 1.0f;
         _mainMenuCanvas.enabled = true;
         _inGameCanvas.enabled = false;
     }
+
 
     private void AfterStart()
     {

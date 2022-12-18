@@ -15,18 +15,15 @@ public class ScoreSystem
         Beam.OnIncreaseScore += IncreaseScore;
         Beam.OnDecreaseScore += DecreaseScore;
         LevelProgress.OnLevelComplete += Disable;
-    }
 
-    public void Init()
-    {       
         _score = 0;
-        OnChangedScore?.Invoke(_score,0);
+        OnChangedScore?.Invoke(_score, 0);
     }
 
     public void IncreaseScore(int point)
     {
         _score += point;
-        _coinCreator.CreateNextPointHandler();
+        _coinCreator.CreateNextCoin();
 
         OnChangedScore?.Invoke(_score,1);
     }

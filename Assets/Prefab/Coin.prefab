@@ -81,7 +81,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _boxCollider: {fileID: 9014896708468011948}
   _particleSystem: {fileID: 8935091612330291782}
-  _transform: {fileID: 2380276624882937404}
+  _model: {fileID: 2075665519599795865}
   _duration: 0.5
 --- !u!65 &9014896708468011948
 BoxCollider:
